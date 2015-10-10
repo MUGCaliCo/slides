@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>MongoDB desde cero</title>
+
+		<meta name="description" content="desarrollar con mongodb y python">
+		<meta name="author" content="Julian Cantillo">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>MongoDB + Python</h1>
+					<p>
+						<small>Presentado por <br> <a target="_blank" href="http://juliancantillo.me">JulianCantillo</a> / <a target="_blank" href="http://twitter.com/juliancantillo">@juliancantillo</a></small>
+					</p>
+					<h4>MongoDB User Group Cali, Colombia</h4>
+					<p>
+						<small>Meetup <a target="_blank" href="http://bit.ly/MUGCaliCo">MUGCaliCo</a></small><br>
+						<small>Twitter <a target="_blank" href="https://twitter.com/MUGCaliCo">@MUGCaliCo</a></small>
+						<small>G+ <a target="_blank" href="http://bit.ly/MUGCaliCOGPlus">+MUGCaliCo</a></small>
+					</p>
+				</section>
+				<section>
+					
+					<section>
+						<h2>¿Cómo instalar MongoDB?</h2>
+						<ol>
+							<li>Dercargue una distribución adecuada para su SO y arquitectura en este <a target="_blank" href="https://www.mongodb.org/downloads">link</a>
+								<ul>
+									<li>En linux se recomienda usar el gestor de paquetes de su distribuci&oacute;n e.g. apg-get</li>
+									<li>En MacOX se recomienda user <a href="http://brew.sh/">brew</a></li>
+								</ul>
+							</li>
+							<li>Tenga en cuenta que se debe crear una carpeta en la que se albergan las bd de mongo</li>
+							<li>A menos que se instale como servicio se debe iniciar <strong>mongod</strong> cada vez que lo quiera usar</li>
+						</ol>
+						<p>Informaci&oacute;n completa sobre la instalaci&oacute;n en este <a target="_blank" href="http://docs.mongodb.org/manual/tutorial/">link</a></p>
+					</section>
+
+					<!-- Example of nested vertical slides -->
+					<section>
+						<h2>¿Cómo inicio con MongoDB?</h2>
+						<ul>
+							<li>Shell</li>
+							<li>Management Tools
+								<ul>
+									<li><a target="_blank" href="//robomongo.org">Robomonto</a></li>
+									<li><a target="_blank" href="//alternativeto.net/software/robomongo/">Otros</a></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Crear una Base de Datos</h2>
+						<p>Mostrar la db acutal</p>
+						<pre><code data-trim>db</code></pre>
+						<p>Crear una base de datos nueva</p>
+						<pre><code data-trim>use mydb // En este momento no está 100% creada</code></pre>
+						<p>Cambiar de base de datos</p>
+						<pre><code data-trim>use otherdb</code></pre>
+					</section>
+					<section>
+						<h2>Crear una colección (collection)</h2>
+						<p>Para crear una colección se debe insertar al menos un documento a la colección</p>
+						<pre><code data-trim>//Creamos un documento temporal
+	var doc = { name: 'Pepe', lastname: 'Perez' };
+	//Insertamos el documento a la collection friends
+	db.friends.insert(doc);
+	//La colección friends ha sido creada y tiene su primer documento
+	</code></pre>
+					</section>
+					<section>
+						<h2>Manipular Documentos</h2>
+						<p>Un documento es a MongoDB como un registro es a MySQL</p>
+						<blockquote>
+							Los documentos son objetos de javascript y se usa JSON para su notaci&oacute;n internamente su estructura es BSON
+						</blockquote>
+						<p>Con los documentos se pueden realizar las operaciones b&aacute;sicas CRUD ;)</p>
+						<pre><code data-trim >db.collection.insert()
+	db.collection.find()
+	db.collection.update()
+	db.collection.remove()</code></pre>
+					</section>
+					<section>
+						<h2>Insert</h2>
+						<pre><code>
+	// Tenemos el siguiente documento
+	var student = { 
+		code: 'S001',
+		name: 'Ramiro', 
+		lastname: 'Gomes', 
+		courses: [ 
+			{ code: 'C001', name: 'Calculus' },
+			{ code: 'D001', name: 'DataBases' } 
+		]
+	};
+	// Insertamos el objeto JS a la coleccion
+	db.students.insert(student);
+						</code></pre>
+					</section>
+					<section>
+						<h2>Find</h2>
+						<pre><code>
+	// En la coleccion students deseamos buscar
+	// los alumnos que ven C&aacute;lculo
+	db.students.find({ 'courses.name': 'Calculus' });
+
+	// El retorno es un poco dif&iacute;cil de leer
+	// lo embellecemos con .pretty();
+	db.students.find({ 'courses.name': 'Calculus' }).pretty();
+
+	// O podemos buscar por c&oacute;digo
+	db.students.find({ code: 'S001' });
+						</code></pre>
+					</section>
+					<section>
+						<h2>Update</h2>
+						<pre><code>
+	// La modificacion tiene dos partes, la consulta y los nuevos valores
+	db.students.update(
+		{ code: 'S001' } //La consulta, en este caso el estudiante S001
+		{ $set: { age: 20, lastname: 'Gomez' } } // Los nuevos valores
+	);
+						</code></pre>
+						<p>
+							Algunas opciones del m&eacute;todo son:
+						</p>
+						<ul>
+							<li>upsert: Busca y si no encuentra hace un insert de lo contrario actualiza</li>
+							<li>multi: Activa la posiblidad de que actualice varios documentos a la vez</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Update con arrays</h2>
+						<pre><code>
+	// Ramiro va a matricular un nuevo curso
+	db.students.update(
+		{ code: 'S001' },
+		{ 
+			$push: {
+				courses: { code: 'A001', name: 'Algorithmia' },
+			}  
+		}
+	);
+						</code></pre>
+						<p>Y para agregar varios a la vez con el modificador $each</p>
+						<pre><code>
+	// Ramiro va a matricular un nuevo curso
+	db.students.update(
+		{ code: 'S001' },
+		{ 
+			$push: {
+				courses: {
+					$each: [ { code: 'A002', name: 'Algebra' }, { code: 'A003', name: 'Artificial Intelligence' } ]
+				}
+			}  
+		}
+	);
+						</code></pre>
+					</section>
+					<section>
+						<h2>Remove</h2>
+						<pre><code>
+	// Bye bye Ramiro
+	db.students.remove({ code: 'S001' });
+
+	// Para que solo elimine el primero que coincida se
+	// llama el m&eacute;todo con justOne en true
+	db.students.remove({ code: 'S001' }, true);
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>MongoDB + Python</h2>
+						<p>Para conectar la base de datos con python podemos usar el driver oficial</p>
+						<p>pymongo, <a href="http://api.mongodb.org/python/current/index.html">documentation</a></p>
+					</section>
+					<section>
+						<h2>Pero...¿Porqué?</h2>
+						<pre><code data-trim class="python">
+# Python
+person = {
+	'name': "John Doe", 
+	'skills': ["Javascript", "CSS", "HTML"],
+	'work': None
+}
+						</code></pre>
+						<pre><code data-trim class="javascript">
+// Javascript
+person = {
+	"name" : "John Doe", 
+	"skills" : ["Javascript", "CSS", "HTML"],
+	"work" : null
+};
+						</code></pre>
+					</section>
+					<section>
+						<p>MongoDB está hecho para que pensar en la base de datos no sea tan diferente a pensar en código. Y en los lenguajes que más se adapta son JS y Python, es como hablar el mismo idioma.</p>
+					</section>
+					<section>
+						<h2>Conectar con MongoDB</h2>
+						<pre><code data-trim class="python">
+# example001.py
+# import libraries first
+from pymongo import MongoClient
+# connect using URI
+client = MongoClient('mongodb://localhost:27017/')
+						</code></pre>
+					</section>
+					<section>
+						<h2>CRUD</h2>
+						<p>Operaciones básicas con pymongo</p>
+					</section>
+					<section>
+						<pre><code data-trim class="python">
+# CREATE
+result = db.test.insert_one({'x': 1})
+#READ
+db.test.find_one({'x': 1})
+#UPDATE
+result = db.test.replace_one({'x': 1}, {'y': 1})
+#DELETE
+result = db.test.delete_one({'x': 1})
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<h1>Preguntas??</h1>
+				</section>
+				<section>
+					<h1>MUG Cali Colombia</h1>
+					<h3>Haz parte de la comunidad</h3>
+					<ul>
+						<li><a target="_blank" href="http://www.mongodbcali.com">mongodbcali.com</a></li>
+						<li><a target="_blank" href="http://www.meetup.com/Cali-MongoDB-User-Group">Meetup</a></li>
+						<li><a target="_blank" href="https://google.com/+MongoDBCaliColombia/">+MongoDBCAliColombia</a></li>
+						<li><a target="_blank" href="https://twitter.com/MUGCaliCo">@MUGCaliCo</a></li>
+					</ul>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
